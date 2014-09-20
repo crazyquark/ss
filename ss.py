@@ -1,4 +1,4 @@
-from __future__ import print_function, division
+
 from contextlib import closing
 import gzip
 import optparse
@@ -25,9 +25,9 @@ if sys.version_info[0] == 3: # pragma: no cover
     from xmlrpc.client import ServerProxy
     from configparser import RawConfigParser
 else:  # pragma: no cover
-    from urllib import urlopen
-    from xmlrpclib import Server as ServerProxy
-    from ConfigParser import RawConfigParser
+    from urllib.request import urlopen
+    from xmlrpc.client import Server as ServerProxy
+    from configparser import RawConfigParser
 
 
 def obtain_guessit_query(movie_filename, language):
@@ -406,8 +406,8 @@ def main(argv=sys.argv, stream=sys.stdout):
             for movie_filename, subtitles in to_embed:
                 subtitles.sort()
                 movie_ext = os.path.splitext(movie_filename)[1].lower()
-                mkv_filename = os.path.splitext(movie_filename)[0] + u'.mkv'
-                if movie_ext != u'.mkv' and not os.path.isfile(mkv_filename):
+                mkv_filename = os.path.splitext(movie_filename)[0] + '.mkv'
+                if movie_ext != '.mkv' and not os.path.isfile(mkv_filename):
                     f = executor.submit(embed_mkv, movie_filename, subtitles)
                     future_to_mkv_filename[f] = (mkv_filename, movie_filename)
                 else:
@@ -433,16 +433,16 @@ def main(argv=sys.argv, stream=sys.stdout):
 
 
 def embed_mkv(movie_filename, subtitles):
-    output_filename = os.path.splitext(movie_filename)[0] + u'.mkv'
+    output_filename = os.path.splitext(movie_filename)[0] + '.mkv'
     params = [
-        u'mkvmerge',
-        u'--output', output_filename,
+        'mkvmerge',
+        '--output', output_filename,
         movie_filename,
     ]
     for language, subtitle_filename in sorted(subtitles):
         iso_language = convert_language_code_to_iso639_2(language)
         params.extend([
-            u'--language', u'0:{0}'.format(iso_language),
+            '--language', '0:{0}'.format(iso_language),
             subtitle_filename,
         ])
     try:
@@ -476,7 +476,7 @@ def check_mkv_installed():
     Returns True if mkvtoolinx seems to be installed.
     """
     try:
-        check_output([u'mkvmerge', u'--version'])
+        check_output(['mkvmerge', '--version'])
     except subprocess.CalledProcessError:
         return False
     else:
